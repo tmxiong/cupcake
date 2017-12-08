@@ -10,6 +10,13 @@ import launchPage from './views/launchPage'
 import CPWebViewPage from './views/CPWebViewPage';
 import jieshaoDetailPage from './views/detailPage/jieshaoDetailPage'
 import AboutAppPage from './views/detailPage/aboutAppPage';
+import RacePage from './views/detailPage/racePage';
+import TuiJianPage from './views/tuijianPage';
+import MoreNewsPage from './views/detailPage/moreNewsPage'
+import ArticleDetailPage from './views/detailPage/articleDetailPage'
+import MoreToolsPage from './views/detailPage/moreToolsPage'
+import GongluePage from './views/detailPage/gongluePage'
+import GonglueDetailPage from './views/detailPage/gonglueDetailPage'
 const routers = StackNavigator({
     launch: {screen: launchPage},
     Main: {screen: MainPage,},
@@ -20,6 +27,15 @@ const routers = StackNavigator({
     jieshaoDetail: {screen: jieshaoDetailPage},
 
     HistoryData: {screen: historyDataPage},
+
+    Race: {screen: RacePage},
+    Tuijian: {screen: TuiJianPage,navigationOptions:{header:null,}},
+    MoreNews: {screen: MoreNewsPage,navigationOptions:{header:null,}},
+    ArticleDetail: {screen: ArticleDetailPage,navigationOptions:{header:null,}},
+    MoreTools: {screen: MoreToolsPage,navigationOptions:{header:null,}},
+    Gonglue: {screen: GongluePage,navigationOptions:{header:null,}},
+    GonglueDetail: {screen: GonglueDetailPage,navigationOptions:{header:null,}},
+
 
     // 欢迎页 引导页
     Welcome: {screen: welcomePage},

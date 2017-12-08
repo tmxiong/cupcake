@@ -1,4 +1,3 @@
-
 import React, {Component} from 'react';
 import {
     AppRegistry,
@@ -65,18 +64,17 @@ export default class tipsDetailPage extends Component {
             this.type = 'download';
             Linking.openURL(url)
                 .catch(err => Alert.alert( '错误提示：',
-                '您似乎没有安装浏览器，请先安装浏览器再更新。',
-                [
-                    {text: '确定', onPress: ()=> {}},
-                ]));
+                    '您似乎没有安装浏览器，请先安装浏览器再更新。',
+                    [
+                        {text: '确定', onPress: ()=> {}},
+                    ]));
         }
     }
 
     render() {
         return (
             <View style={styles.container}>
-                <StatusBar translucent= {true} backgroundColor={'transparent'} barStyle={'light-content'}/>
-                <View style={styles.statusBar}/>
+                {/*<View style={styles.statusBar}/>*/}
 
 
                 <Spinner visible={this.state.isLoading}
@@ -93,9 +91,12 @@ export default class tipsDetailPage extends Component {
                     onLoadStart={()=>this._onLoadStart()}
                     onLoadEnd={()=>this._onLoadEnd()}
                     onNavigationStateChange={this.onNavigationStateChange}//在WebView中注册该回调方法
+                    scalesPageToFit={false}
                 />
+                <StatusBar translucent= {true} backgroundColor={'transparent'} barStyle={'light-content'}/>
+
             </View>
-            )
+        )
     }
 
 }
@@ -113,7 +114,7 @@ const styles = StyleSheet.create({
     },
     statusBar: {
         height:cfn.picHeight(50),
-        backgroundColor:'rgb(217,29,54)',
+        backgroundColor:'#D74235',
         width:cfn.deviceWidth()
     },
     isLoading: {

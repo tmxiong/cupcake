@@ -24,7 +24,7 @@ export default class navBar extends PureComponent {
     };
 
     static defaultProps = {
-        bgColor: '#071244',
+        bgColor: '#d22',
         bgImg: require('../imgs/navBar/nav_bg_transparent.png'),
         leftText: null,
         leftIcon: require('../imgs/navbar_back.png'),
@@ -55,7 +55,6 @@ export default class navBar extends PureComponent {
     componentDidMount() {
         this.initSetState();
         this.renderLeft();
-        this.renderRight();
     }
 
     componentWillUnmount() {
@@ -109,7 +108,7 @@ export default class navBar extends PureComponent {
                 <Text style={[styles.TextStyle,{color:props.textColor},{alignSelf:'flex-end'}]}>{props.rightText}</Text>
             </TouchableOpacity>)
         }
-        this.setState({rightView: rightView})
+        return rightView;
     }
     renderMiddle() {
         let props = this.props;
@@ -155,7 +154,7 @@ export default class navBar extends PureComponent {
 
                     {this.state.leftView}
                     {this.renderMiddle()}
-                    {this.state.rightView}
+                    {this.renderRight()}
 
                 </View>
 

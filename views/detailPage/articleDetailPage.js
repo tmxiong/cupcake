@@ -22,16 +22,12 @@ export default class gongluePage extends Component{
 
         this.id = props.navigation.state.params.id;
         this.name = props.navigation.state.params.name;
-        if(this.name == '详细攻略') {
-            this.url = urls.getGonglueDetail(this.id);
-            this.script = 'document.getElementById("tuijian").style.display="none";' +
-                'document.getElementsByClassName("share")[0].style.display="none";';
-        } else {
-            this.url = urls.getNewsDetail(this.id);
-            this.script = 'document.getElementById("author").textContent="' + config.appName + '";' +
-                'document.getElementById("tuijian").style.display="none";' +
-                'document.getElementsByClassName("share")[0].style.display="none";';
-        }
+
+        this.url = urls.getNewsDetail(this.id);
+        this.script = 'document.getElementById("author").textContent="' + config.appName + '";' +
+            'document.getElementById("tuijian").style.display="none";' +
+            'document.getElementsByClassName("share")[0].style.display="none";';
+
 
         this.state={
             isLoading:true,

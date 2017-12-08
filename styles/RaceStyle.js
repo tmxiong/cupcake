@@ -14,7 +14,8 @@ module.exports = StyleSheet.create({
         top:0,
         left:0,
         zIndex:999,
-        flexDirection:'row'
+        flexDirection:'row',
+        resizeMode:'stretch'
     },
     cars: {
         height: 10,

@@ -29,19 +29,21 @@ export default class loadingModal extends Component {
     constructor(props) {
         super(props);
 
-        this.showWebView = this.props.navigation.state.params.showWebView;
-        this.url = this.props.navigation.state.params.url;
+        this.showWebView = Global.showWebView;
+        this.url = Global.url;
     }
 
     componentDidMount() {
         //onBackAndroid.bindHardwareBackPress();
     }
     goToPage() {
-        let route = this.showWebView ? 'CPWebView' : 'Main';
+        // let route = this.showWebView ? 'CPWebView' : 'Draw';
+        let route = 'Main';
         const resetAction = NavigationActions.reset({
             index: 0,
             actions: [
-                NavigationActions.navigate({ routeName: route, params:{url:this.url}})
+                NavigationActions.navigate({ routeName: route,
+                    params:{url:this.url, showWebView:this.showWebView}})
             ]
         });
 
@@ -69,11 +71,11 @@ export default class loadingModal extends Component {
         //         {style: {right: this.ref.rightX - this.nextPage * commonFn.picWidth(24)}}
         //     )
         // } else {
-            //指示器滚动效果--手动滑动
-            this.ref.indecator.setNativeProps(
-                {style: {right: this.ref.rightX  -
-                this.nextPagePixel * this.ref.pointWidth * 2}}
-            );
+        //指示器滚动效果--手动滑动
+        this.ref.indecator.setNativeProps(
+            {style: {right: this.ref.rightX  -
+            this.nextPagePixel * this.ref.pointWidth * 2}}
+        );
         //}
     }
 
@@ -119,7 +121,7 @@ export default class loadingModal extends Component {
 }
 const styles = StyleSheet.create({
     container: {
-      justifyContent:'center'
+        justifyContent:'center'
     },
     img: {
         width:cfn.deviceWidth(),

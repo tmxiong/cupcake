@@ -17,7 +17,7 @@ import RaceStyle from '../styles/RaceStyle'
 import commonFun from '../tools/commonFun'
 import Global from '../global/global';
 import carNum from '../imgs/race/car_num.png'
-import rankingBg from '../imgs/race/chengji.png'
+import rankingBg from '../imgs/race/rank_bg.jpg'
 const cars = [
     require('../imgs/race/car1_20161018.png'),
     require('../imgs/race/car2_20161018.png'),

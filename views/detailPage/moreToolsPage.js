@@ -18,12 +18,10 @@ import urls from '../../config/urls';
 import config from '../../config/config'
 import cfn from '../../tools/commonFun'
 import NavBar from '../../component/NavBar';
-import Loading from '../../component/updateModal'
-import options from '../../imgs/options_icon.png'
-import OptionModal from '../../component/optionModal';
+
 import Global from '../../global/global';
-import fetchp from '../../tools/fetch-polyfill';
-export default class yucePage extends Component {
+
+export default class moreToolsPage extends Component {
 
     static defaultProps = {
 
@@ -32,13 +30,14 @@ export default class yucePage extends Component {
     constructor(props){
         super(props);
 
-        this.type = props.navigation.state.params.type;
-        this.name = props.navigation.state.params.name;
 
         this.state={
 
         };
 
+        let params = props.navigation.state.params;
+        this.current = params.current;
+        this.isFromHistoryPage = params.isFromHistoryPage;
     }
 
 
@@ -51,12 +50,6 @@ export default class yucePage extends Component {
         this.props.navigation.goBack();
     }
 
-    getData(type, page) {
-        fetchp(urls.getYuce(type, page),{timeout:5*1000})
-            .then((res)=>res.json())
-            .then((data)=>this.setData(data))
-            .catch((err)=>this.setError(err))
-    }
 
     goToPage(route, params) {
         // DrawerOpen
@@ -65,88 +58,34 @@ export default class yucePage extends Component {
     }
 
     render() {
+        const{menuData} = this.props.navigation.state.params;
+        let menuViews = [];
+        for(let i = 0; i < menuData.length; i++) {
+            menuViews.push(
+                <TouchableOpacity
+                    key={i}
+                    activeOpacity={0.8}
+                    onPress={()=>this.goToPage(menuData[i].route,{current:this.current,isFromHistoryPage:false})}
+                    style={[styles.menuItem,{backgroundColor:menuData[i].bgColor}]}>
+                    <Image source={menuData[i].icon} style={styles.menuIcon}/>
+                    <View>
+                        <Text style={styles.menuTitle}>{menuData[i].title}</Text>
+                        <Text style={styles.menuSubTitle}>{menuData[i].subTitle}</Text>
+                    </View>
+                    <Text style={{color:'#ddd',fontSize:12,position:'absolute',right:20}}>点击查看>></Text>
+                </TouchableOpacity>
+            )
+        }
+
+
         return (
             <View style={styles.container}>
                 <NavBar
-                    middleText={"更多工具"}
+                    middleText={"PK10工具"}
                     leftFn={this.goBack.bind(this)}
                 />
                 <ScrollView>
-                    <TouchableOpacity
-                        onPress={()=>this.goToPage('Order')}
-                        activeOpacity={0.8}>
-                        <Image
-                            source={require('../../imgs/home/menu_bg_5_1.png')}
-                            style={styles.menuItem}>
-                            <Image source={require('../../imgs/home/lottery_icon.png')} style={styles.menuIcon}/>
-                            <View>
-                                <Text style={styles.menuText}>更多彩种</Text>
-                                <Text style={styles.menuSubText}>时时彩/11选5/排列3/排列5等</Text>
-                            </View>
-                            <Text style={styles.look}>我要查看</Text>
-                        </Image>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        activeOpacity={0.8}
-                        onPress={()=>this.goToPage('History',{type:this.type, name:this.name})}
-                    >
-                        <Image
-                            source={require('../../imgs/home/menu_bg_1.png')}
-                            style={styles.menuItem}>
-                            <Image source={require('../../imgs/home/history_icon.png')} style={styles.menuIcon}/>
-                            <View>
-                                <Text style={styles.menuText}>历史开奖号码</Text>
-                                <Text style={styles.menuSubText}>昨天/前天/50期/100期</Text>
-                            </View>
-                            <Text style={styles.look}>我要查看</Text>
-                        </Image>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        activeOpacity={0.8}
-                        onPress={()=>this.goToPage('Trend',{type:this.type, name:this.name})}
-                    >
-                        <Image
-                            source={require('../../imgs/home/menu_bg_2.png')}
-                            style={styles.menuItem}>
-                            <Image source={require('../../imgs/home/trend_icon.png')} style={styles.menuIcon}/>
-                            <View>
-                                <Text style={styles.menuText}>快3走势图</Text>
-                                <Text style={styles.menuSubText}>走势规律一目了然</Text>
-                            </View>
-                            <Text style={styles.look}>我要查看</Text>
-                        </Image>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        onPress={()=>this.goToPage('Gonglue')}
-                        activeOpacity={0.8}>
-                        <Image
-                            source={require('../../imgs/home/menu_bg_3.png')}
-                            style={styles.menuItem}>
-                            <Image source={require('../../imgs/home/gonglue_icon.png')} style={styles.menuIcon}/>
-                            <View>
-                                <Text style={styles.menuText}>秘籍攻略</Text>
-                                <Text style={styles.menuSubText}>来吧，助你一臂之力</Text>
-                            </View>
-                            <Text style={styles.look}>我要查看</Text>
-                        </Image>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        activeOpacity={0.8}
-                        onPress={()=>this.goToPage('MoreNews')}>
-                        <Image
-                            source={require('../../imgs/home/menu_bg_4.png')}
-                            style={styles.menuItem}>
-                            <Image source={require('../../imgs/home/news_icon.png')} style={styles.menuIcon}/>
-                            <View>
-                                <Text style={styles.menuText}>彩票资讯</Text>
-                                <Text style={styles.menuSubText}>丰富的各类彩票资讯</Text>
-                            </View>
-                            <Text style={styles.look}>我要查看</Text>
-                        </Image>
-                    </TouchableOpacity>
+                    {menuViews}
 
 
                     <View style={{height:cfn.picHeight(20)}}/>
@@ -166,13 +105,12 @@ const styles = StyleSheet.create({
         width:cfn.deviceWidth()-cfn.picWidth(40),
         height:cfn.picHeight(200),
         alignSelf:'center',
-        borderRadius:25,
         marginTop:cfn.picHeight(20),
-        resizeMode:'stretch',
         flexDirection:'row',
-        alignItems:'center'
+        alignItems:'center',
+        backgroundColor:'#f89'
     },
-    menuText: {
+    menuTitle: {
         color:'#fff',
         backgroundColor:'transparent',
         fontSize: 18
@@ -180,10 +118,9 @@ const styles = StyleSheet.create({
     menuIcon: {
         width:cfn.picWidth(80),
         height:cfn.picWidth(80),
-        resizeMode:'contain',
         margin:cfn.picWidth(30)
     },
-    menuSubText: {
+    menuSubTitle: {
         color:'#fff',
         fontSize:10,
         marginTop:cfn.picHeight(10)

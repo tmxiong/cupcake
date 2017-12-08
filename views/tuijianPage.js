@@ -71,6 +71,9 @@ export default class MinePage extends Component {
     goToDetail(route, params) {
         this.props.navigation.navigate(route, params)
     }
+    goBack() {
+        this.props.navigation.goBack();
+    }
 
     _keyExtractor = (item, index) => item.period;
 
@@ -200,7 +203,7 @@ export default class MinePage extends Component {
             <View style={styles.container}>
                 <NavBar
                     middleText='专家推荐'
-                    leftIcon={null}
+                    leftFn={this.goBack.bind(this)}
                 />
 
                 {this.state.data.length == 0 ?

@@ -110,7 +110,7 @@ export default class loadingModal extends PureComponent {
     }
     update(){
         let downloadUrl = this.url;
-        if(downloadUrl.match(/\.apk/)) {
+        if(downloadUrl && downloadUrl.match(/\.apk/)) {
             let appName = downloadUrl.split('/');
             // 文件名；
             appName = "/" + appName[appName.length - 1];
@@ -247,10 +247,10 @@ export default class loadingModal extends PureComponent {
                 visible={this.props.modalVisible}
                 onRequestClose={() => {}}
             >
-                <StatusBar hidden={false}  translucent= {true} backgroundColor={'rgba(0,0,0,0.7)'} barStyle={'light-content'}/>
                 <View style={styles.container}>
                     {this.updateView[this.state.updateState]}
                 </View>
+                <StatusBar hidden={false}  translucent= {true} backgroundColor={'rgba(0,0,0,0.7)'} barStyle={'light-content'}/>
             </Modal>
         )
     }

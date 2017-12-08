@@ -86,7 +86,7 @@ export default class playTips extends Component {
                 onPress={()=>this.goToPage('ArticleDetail', {
                         id: item.id,
                         //name: item.title,
-                        name: '资讯详情',
+                        name: '喜讯详情',
                         rowData: item,
                     }
                 )}
@@ -113,7 +113,7 @@ export default class playTips extends Component {
         return(
             <View style={styles.container}>
                 <NavBar
-                    middleText='彩票资讯'
+                    middleText='彩市喜讯'
                     leftFn={()=>this.goBack()}
                 />
                 <FlatList

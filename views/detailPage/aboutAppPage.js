@@ -63,7 +63,7 @@ export default class articleDetailPage extends Component {
                 <ScrollView style={styles.content}>
                     <Text style={styles.title}>关于App</Text>
                     <Text style={styles.text}>
-                        此App支持PK10开奖直播、开奖回放、号码推荐、历史号码查询等特色功能。同时还支持时时彩、排列3、排列5、北京快乐8、快3、11选5等彩种的近期开奖查询和玩法帮助。
+                        此App支持PK10开奖动画播放、号码推荐、历史号码查询等特色功能。同时还支持时时彩、排列3、排列5、北京快乐8、快3、11选5等彩种的近期开奖查询和玩法帮助。
                     </Text>
                     <Text style={styles.title}>关于PK10</Text>
                     <Text style={styles.text}>

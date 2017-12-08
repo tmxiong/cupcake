@@ -21,6 +21,7 @@ import Loading from '../../component/loading'
 import fetchp from '../../tools/fetch-polyfill';
 import DatePicker from 'react-native-datepicker'
 import urls from '../../config/urls'
+import Global from '../../global/global'
 export default class articleDetailPage extends Component {
     static navigationOptions = {header: null};
 
@@ -36,7 +37,8 @@ export default class articleDetailPage extends Component {
             isLoading: false,
             loadState: this.loading,
             date: new Date().Format('yyyy-MM-dd')
-        }
+        };
+        this.isFromRacePage = this.props.navigation.state.params.isFromRacePage;
     }
     static defaultProps = {
 
@@ -49,11 +51,20 @@ export default class articleDetailPage extends Component {
                 data:data.items
             })
         } else {
-            //this.getHistoryData(0);
+            this.getHistoryData(0);
         }
     }
     goBack() {
         this.props.navigation.goBack();
+    }
+
+    goToDetail(route, params) {
+        if(route == 'Race' && this.isFromRacePage) {
+            this.props.navigation.state.params.update(params);
+
+            return this.goBack();
+        }
+        this.props.navigation.navigate(route, params);
     }
 
     setDate(date) {
@@ -97,16 +108,20 @@ export default class articleDetailPage extends Component {
     }
 
     renderItem({item, index}) {
+        let bgColor = index%2 == 0 ? '#fff' : '#f5f5f5';
         return (
-            <View
+            <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={()=>this.goToDetail('Race',{current:item,isFromHistoryPage:true})}
                 key={item.period}
-                style={styles.itemContainer}>
+                style={[styles.itemContainer,{backgroundColor:bgColor}]}>
                 <Text style={styles.qishu}>{item.period}</Text>
                 <Text style={styles.shijian}>{item.time}</Text>
                 <View style={styles.codesContainer_1}>
                     {this.renderCode(item.result.split(','))}
                 </View>
-            </View>
+                <Image style={styles.r_icon} source={require('../../imgs/more_r_icon.png')}/>
+            </TouchableOpacity>
         )
     }
 
@@ -137,6 +152,7 @@ export default class articleDetailPage extends Component {
                 <NavBar
                     middleText="开奖记录"
                     leftFn={()=>this.goBack()}
+                    rightText={this.state.date}
                 />
                 {this.state.data.length == 0 ? null : <View
                     key={'head'}
@@ -166,7 +182,7 @@ export default class articleDetailPage extends Component {
                     />}
                 <View style={{position:'absolute', top:0,
                     right:0,height:cfn.picHeight(200),width:cfn.picWidth(200),
-                    alignItems:'center',justifyContent:'center'}}>
+                    alignItems:'center',justifyContent:'center',opacity:0}}>
                     <DatePicker date={this.state.date}
                                 customStyles={{
                                     dateInput:{
@@ -203,7 +219,7 @@ const styles = StyleSheet.create({
         width:cfn.deviceWidth(),
         borderBottomColor:'#eee',
         borderBottomWidth:1,
-        height:cfn.picHeight(80),
+        height:cfn.picHeight(100),
         backgroundColor:'#fff'
     },
     // 开奖记录
@@ -224,8 +240,9 @@ const styles = StyleSheet.create({
     codesContainer_1: {
         flexDirection: 'row',
         alignItems:'center',
-        width:cfn.deviceWidth() - cfn.picWidth(100+150),
-        justifyContent:'center'
+        width:cfn.deviceWidth() - cfn.picWidth(100+130+60),
+        justifyContent:'center',
+        //backgroundColor:'#f00'
     },
     codeContainer_1: {
         width:cfn.picHeight(40),
@@ -237,16 +254,18 @@ const styles = StyleSheet.create({
         marginLeft:cfn.picWidth(5),
     },
     qishu: {
-        width:cfn.picWidth(150),
+        width:cfn.picWidth(130),
         textAlign:'center',
         color:'#555',
-        fontSize:13
+        fontSize:13,
+        //backgroundColor:'#ff0'
     },
     shijian: {
         width:cfn.picWidth(100),
         textAlign:'center',
         color:'#555',
-        fontSize:13
+        fontSize:13,
+        //backgroundColor:'#ff0'
     },
     kaijiangjieguo: {
         color:'#071244',
@@ -256,4 +275,10 @@ const styles = StyleSheet.create({
         color:'#fff',
         fontSize:12
     },
+    r_icon: {
+        width:cfn.picWidth(50),
+        height:cfn.picWidth(50),
+        resizeMode:'contain',
+        //backgroundColor:'#f00'
+    }
 });

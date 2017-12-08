@@ -12,7 +12,7 @@ module.exports = StyleSheet.create({
     },
     content: {
         position: 'absolute',
-        width:commonFun.picWidth(150),
+        minWidth:commonFun.picWidth(150),
         height:commonFun.picWidth(100),
         justifyContent:'center',
         alignItems:'center',

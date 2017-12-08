@@ -24,13 +24,14 @@ exports.getJieshao = function (type) {
     return 'http://pimg1.126.net/swdp/game_rule/'+ type +'.html?time='+timeStamp();
 };
 
-// 获取文章
-exports.getArticleList = function (now,next) {
-    return 'http://c.m.163.com/nc/article/list/'+ url_id +'/'+ now +'-'+ next +'.html'
+// 资讯
+exports.getNews = function (page) {
+    return 'https://m.qmcai.com/support/cmsv2/information/queryContent?parameter=%7B%22command%22:%22queryContent%22,%22categoryId%22:%22csxw%22,%22offset%22:'+page+',%22size%22:15,%22platform%22:%22html%22,%22version%22:%225.2.16%22%7D&callback=jsonp5';
 };
-// 根据docid获取文章详情
-exports.getArticleDetail = function (docid) {
-    return 'http://c.m.163.com/nc/article/' + docid + '/full.html'
+
+// 资讯详情
+exports.getNewsDetail = function (id) {
+    return 'https://m.qmcai.com/zixun/detail.html?_id=' + id +'&time=' + timeStamp();
 };
 
 // 购彩攻略 --------------------------------------------

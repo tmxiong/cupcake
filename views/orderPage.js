@@ -96,7 +96,7 @@ export default class articleDetailPage extends Component {
             width:cfn.picWidth(50),
                 height:cfn.picWidth(50),
                 borderRadius:cfn.picWidth(25),
-                backgroundColor:'#f22',
+                backgroundColor:'#d22',
                 alignItems:'center',
                 justifyContent:'center',
                 marginRight:cfn.picWidth(10),

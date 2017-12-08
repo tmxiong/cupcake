@@ -27,7 +27,7 @@ import CountDown from '../component/countDown';
 import Race from '../component/Race';
 import fetchp from '../tools/fetch-polyfill';
 import NavBar from '../component/NavBar'
-
+import Global from '../global/global'
 export default class HomePage extends Component {
     constructor(props) {
         super(props);
@@ -48,6 +48,7 @@ export default class HomePage extends Component {
             period: '*',// 当前期号,
             result: ['*', '*', '*', '*', '*', '*', '*', '*', '*', '*',], // 开奖号码
             items: null,
+            newsItem:null,
         };
     }
 
@@ -58,7 +59,8 @@ export default class HomePage extends Component {
         // true 为首次加载或自动加载
         // false 为下拉刷新
         this.getData();
-        this.getHistoryData(0);
+        this.getNews();
+        //this.getHistoryData(0);
     }
 
     componentWillUnmount() {
@@ -109,27 +111,57 @@ export default class HomePage extends Component {
                 },3*1000)
             }else {
                 this.getHistoryData(0);
-                let result = items.current.result.split(',');
+                this.current = items.current;
                 this.setState({
                     period: items.current.period,
-                    result: result,
+                    result: this.current.result.split(','),
                     isRefreshing:false,
                     isAuto: true,
-
                 });
-                this.startRace(result);
             }
         }
     }
 
-    startRace(raceNum) {
-
-        this._raceRef._setRace('yiJing',raceNum);
-        // this._raceRef._setRace('zhunBei',raceNum);
-        // setTimeout(()=>{
-        //     this._raceRef._setRace('zhengZai',raceNum);
-        // },2*1000);
+    getNews() {
+        fetchp(urls.getNews(0),{timeout:5*1000})
+            .then((res)=>res.text())
+            .then((data)=>this.setNews(data))
     }
+    setNews(data) {
+        data = data.substring(7,data.length-1);
+        data = JSON.parse(data);
+        data = data.data.dataConfig.data;
+        let views = [];
+        let length = data.length < 5 ? data.length : 5;
+        for(let i = 0; i < length; i++) {
+            let item = data[i];
+            views.push(
+                <TouchableOpacity
+                    activeOpacity={0.8}
+                    key={i}
+                    onPress={()=>this.goToDetail('ArticleDetail', {
+                            id: item.id,
+                            //name: item.title,
+                            name: '彩市喜讯',
+                            rowData: item,
+                        }
+                    )}
+                    style={styles.item_container}>
+                    <View style={styles.item_text_container}>
+                        <Text
+                            style={styles.item_title}>{item.title}</Text>
+                        <Text style={styles.item_source}>{config.appName}</Text>
+                        <Text style={styles.item_time}>{new Date(item.publishTime).toLocaleString().split(' ')[0]}</Text>
+                    </View>
+                    <Image
+                        style={styles.item_img}
+                        source={{uri: item.imageList[0]}}/>
+                </TouchableOpacity>
+            )
+        }
+        this.setState({newsItem: views})
+    }
+
     clearDaojishi() {
         if(this.timer) {
             clearInterval(this.timer);
@@ -184,7 +216,7 @@ export default class HomePage extends Component {
             isAuto: false,
         });
         this.getData();
-        this.getHistoryData(0);
+        //this.getHistoryData(0);
     }
 
     getHistoryData(timestamp) {
@@ -261,12 +293,58 @@ export default class HomePage extends Component {
         }
         return codeView;
     }
+
+    renderMenu() {
+        let menuViews = [];
+        for(let i = 0; i < 4; i++) {
+            menuViews.push(
+                <TouchableOpacity
+                    key={i}
+                    activeOpacity={0.8}
+                    onPress={()=>this.goToDetail(menuData[i].route,{current:this.current})}
+                    style={[styles.menuItem,{backgroundColor:menuData[i].bgColor}]}>
+                    <Image source={menuData[i].icon} style={styles.menuIcon}/>
+                    <View>
+                        <Text style={styles.menuTitle}>{menuData[i].title}</Text>
+                        <Text style={styles.menuSubTitle}>{menuData[i].subTitle}</Text>
+                    </View>
+
+                </TouchableOpacity>
+            )
+        }
+        return menuViews;
+    }
+
     render() {
+
+        let codeView = [];
+        let daxiaoView = [];
+        let danshuangView = [];
+        const {result} = this.state;
+        for(let i = 0; i < result.length; i++) {
+            codeView.push(
+                <View key = {i} style={[styles.codeContainer,{backgroundColor:cfn.getPK10Color(result[i])}]}>
+                    <Text style={styles.code}>{result[i]}</Text>
+                </View>
+            );
+            daxiaoView.push(
+                <View key = {i} style={[styles.codeContainer,{backgroundColor:result[i]<=5?"#999":"#ccc"}]}>
+                    <Text style={styles.code}>{result[i]<=5 ? "小" : "大"}</Text>
+                </View>
+            );
+            danshuangView.push(
+                <View key = {i} style={[styles.codeContainer,{backgroundColor:result[i]%2==0?"#999":"#ccc"}]}>
+                    <Text style={styles.code}>{result[i]%2==0 ? "双" : "单"}</Text>
+                </View>
+            )
+        }
+
+
+
         return (
             <View style={styles.container}>
                 <NavBar
-                bgImg={require('../imgs/banner/pk10_banner.png')}
-                bgColor='transparent'
+                //bgImg={require('../imgs/banner/pk10_banner.png')}
                 middleText='北京赛车'
                 leftIcon={null}
                 />
@@ -282,55 +360,65 @@ export default class HomePage extends Component {
                             progressBackgroundColor="#fff"
                         />}
                 >
-                    <View>
-                        <View style={{flexDirection:'row',height:cfn.picHeight(100),alignItems:'center'}}>
-                            <Text style={{fontSize:15,marginLeft:cfn.picWidth(20)}}>第 </Text>
-                            <Text style={{color:'#f11',fontSize:15}}>{this.state.period}</Text>
-                            <Text style={{fontSize:15}}> 期开奖号码：</Text>
+                    <View style={{backgroundColor:'#fff',marginTop:cfn.picHeight(20)}}>
+                        <View style={{flexDirection:'row',height:cfn.picHeight(60),
+                            alignItems:'center',borderBottomColor:'#eee',borderBottomWidth:1}}>
+                            <Text style={{fontSize:15,color:"#aaa",marginLeft:cfn.picWidth(20)}}>第 </Text>
+                            <Text style={{color:'#222',fontSize:15}}>{this.state.period}</Text>
+                            <Text style={{fontSize:15,color:"#aaa"}}> 期开奖号码：</Text>
+                            <TouchableOpacity
+                                activeOpacity={0.8}
+                                onPress={()=>this.goToDetail('Race',{current:this.current,isFromHistoryPage:false})}
+                                style={{position:'absolute',right:cfn.picWidth(20),
+                                    height:cfn.picHeight(60),justifyContent:'center'}}>
+                                <Text style={{color:'#f22'}}>查看开奖视频>></Text>
+                            </TouchableOpacity>
                         </View>
 
                         <View style={styles.codesContainer}>
-                            <View style={styles.codeContainer}><Text style={styles.code}>{this.state.result[0]}</Text></View>
-                            <View style={styles.codeContainer}><Text style={styles.code}>{this.state.result[1]}</Text></View>
-                            <View style={styles.codeContainer}><Text style={styles.code}>{this.state.result[2]}</Text></View>
-                            <View style={styles.codeContainer}><Text style={styles.code}>{this.state.result[3]}</Text></View>
-                            <View style={styles.codeContainer}><Text style={styles.code}>{this.state.result[4]}</Text></View>
-                            <View style={styles.codeContainer}><Text style={styles.code}>{this.state.result[5]}</Text></View>
-                            <View style={styles.codeContainer}><Text style={styles.code}>{this.state.result[6]}</Text></View>
-                            <View style={styles.codeContainer}><Text style={styles.code}>{this.state.result[7]}</Text></View>
-                            <View style={styles.codeContainer}><Text style={styles.code}>{this.state.result[8]}</Text></View>
-                            <View style={styles.codeContainer}><Text style={styles.code}>{this.state.result[9]}</Text></View>
+                            {codeView}
                         </View>
-                        <View style={{flexDirection:'row',marginTop:cfn.picHeight(10),marginBottom:cfn.picHeight(10)}}>
-                            <Text style={{marginLeft:cfn.picWidth(20)}}>距{parseInt(this.state.period)+1 || '*'}期开奖剩余时间：</Text>
+                        <View style={[styles.codesContainer,{backgroundColor:'#e5e5e5'}]}>
+                            {daxiaoView}
+                        </View>
+                        <View style={[styles.codesContainer,{backgroundColor:'#e5e5e5'}]}>
+                            {danshuangView}
+                        </View>
+                        <View style={{flexDirection:'row',height:cfn.picHeight(60),alignItems:'center',
+                            marginBottom:cfn.picHeight(10),borderTopColor:'#ddd',borderTopWidth:1}}>
+                            <Text style={{marginLeft:cfn.picWidth(20),color:'#aaa'}}>下期开奖倒计时：</Text>
                             <CountDown
                                 ref={(ref)=>this.countDownRef = ref}
                             />
                         </View>
                     </View>
-                    <Race
-                        ref={(ref)=>this._raceRef = ref}
-                    />
+
                     {/*开奖号码*/}
                     <View style={styles.historyHead}>
-                        <Text style={{fontSize:15,marginLeft:cfn.picWidth(20),color:'#071244'}}>开奖记录</Text>
+                        <Text style={{fontSize:15,marginLeft:cfn.picWidth(20),color:'#071244'}}>PK10工具</Text>
                         <TouchableOpacity
                             activeOpacity={0.8}
                             style={{marginRight:cfn.picWidth(20)}}
-                            onPress={()=>this.goToDetail('HistoryData',{data:this.state.historyData})}
+                            onPress={()=>this.goToDetail('MoreTools',
+                                {menuData:menuData,current:this.current,isFromHistoryPage:false})}
                         >
                             <Text style={{fontSize:15}}>查看更多>></Text>
                         </TouchableOpacity>
                     </View>
-                    <View style={styles.historyBody}>
-                        {this.state.items == null ?
-                            <TouchableOpacity
-                            activeOpacity={1}
-                            onPress={()=>this.reLoad()}
-                            >
-                            <Text>{this.state.loadState}</Text>
-                            </TouchableOpacity> : this.state.items}
+                    <View style={styles.menuContainer}>
+                        {this.renderMenu()}
                     </View>
+                    <View style={styles.historyHead}>
+                        <Text style={{fontSize:15,marginLeft:cfn.picWidth(20),color:'#071244'}}>彩市喜讯</Text>
+                        <TouchableOpacity
+                            activeOpacity={0.8}
+                            style={{marginRight:cfn.picWidth(20)}}
+                            onPress={()=>this.goToDetail('MoreNews')}
+                        >
+                            <Text style={{fontSize:15}}>查看更多>></Text>
+                        </TouchableOpacity>
+                    </View>
+                    {this.state.newsItem}
                 </ScrollView>
                 <View style={{height:cfn.picHeight(100)}}/>
             </View>)
@@ -340,7 +428,6 @@ const styles = StyleSheet.create({
     container: {
         height: cfn.deviceHeight(),
         width: cfn.deviceWidth(),
-        backgroundColor:'#fff'
     },
     nav: {
         width: cfn.deviceWidth(),
@@ -351,23 +438,26 @@ const styles = StyleSheet.create({
     },
     codesContainer: {
         flexDirection: 'row',
-        justifyContent: 'center',
+        justifyContent: 'space-around',
         alignItems: 'center',
         width: cfn.deviceWidth(),
         height: cfn.picHeight(100),
-        backgroundColor: '#fff'
+        backgroundColor: '#fff',
+        paddingLeft:cfn.picWidth(10),
+        paddingRight:cfn.picWidth(10)
     },
     codeContainer: {
-        width: cfn.picHeight(50),
-        height: cfn.picHeight(50),
-        borderRadius: cfn.picHeight(30),
+        width: (cfn.deviceWidth() - cfn.picWidth(11*15))/10,
+        height: (cfn.deviceWidth() - cfn.picWidth(11*15))/10,
+        borderRadius: cfn.picHeight(10),
         alignItems: 'center',
         justifyContent: 'center',
-        marginLeft:cfn.picWidth(10),
-        backgroundColor:'#f22'
+        backgroundColor:'#eee',
+
     },
     code:{
-        color:'#fff'
+        color:'#fff',
+        fontSize:17
     },
 
     // 开奖记录
@@ -387,7 +477,9 @@ const styles = StyleSheet.create({
         alignItems:'center',
         borderBottomColor:'#ddd',
         borderBottomWidth:1,
-        justifyContent:'space-between'
+        justifyContent:'space-between',
+        marginTop:cfn.picHeight(20),
+        backgroundColor:'#fff'
     },
     historyBody: {
         alignItems:'center',
@@ -429,6 +521,86 @@ const styles = StyleSheet.create({
         color:'#fff',
         fontSize:12
     },
+    menuContainer: {
+      flexDirection:'row',
+        flexWrap:'wrap',
+        alignItems:'center',
+        backgroundColor:'#fff'
+    },
+    menuItem: {
+        width:(cfn.deviceWidth()-cfn.picWidth(60))/2 ,
+        height:cfn.picHeight(200),
+        backgroundColor:'#f89',
+        marginLeft:cfn.picWidth(20),
+        marginTop:cfn.picHeight(20),
+        flexDirection:'row',
+        alignItems:'center'
+    },
+    menuTitle: {
+        color:'#fff',
+        fontSize:18
+    },
+    menuSubTitle: {
+        color:'#fff',
+        fontSize:10,
+        marginTop:cfn.picHeight(10)
+    },
+    menuIcon: {
+        width:cfn.picWidth(100),
+        height:cfn.picWidth(100),
+        resizeMode:'contain',
+        margin:cfn.picWidth(20)
+    },
 
+    item_container: {
+        width: cfn.deviceWidth(),
+        height: cfn.picHeight(160),
+        flexDirection: 'row',
+        borderBottomWidth: 1,
+        borderBottomColor: '#ddd',
+        alignItems: 'center',
+        alignSelf: 'center',
+        backgroundColor: '#fff',
+    },
+    item_text_container: {
+        flexWrap: 'wrap',
+        width: cfn.deviceWidth() - cfn.picWidth(180 + 40),
+        paddingLeft: cfn.picWidth(20),
+        height: cfn.picHeight(120),
+    },
+    item_source: {
+        fontSize: 13,
+        color: '#888',
+        position: 'absolute',
+        left: cfn.picWidth(20),
+        bottom: 0
+    },
+    item_time: {
+        fontSize: 13,
+        color: '#888',
+        position: 'absolute',
+        right: cfn.picWidth(20),
+        bottom: 0
+    },
+    item_title: {
+        color: '#444'
+    },
+    item_img: {
+        width: cfn.picWidth(180),
+        height: cfn.picHeight(120),
+        marginLeft: cfn.picWidth(20),
+    }
 
 });
+const menuData = [
+    {title:'开奖视频',subTitle:'任意期开奖视频播放',route:'Race',
+        icon:require('../imgs/home/donghua_icon.png'),bgColor:'#1c1690'},
+    {title:'历史开奖',subTitle:'可按时间查询',route:'HistoryData',
+        icon:require('../imgs/home/history_icon.png'),bgColor:'#165590'},
+    {title:'玩法攻略',subTitle:'知己知彼 百战百胜',route:'Gonglue',
+        icon:require('../imgs/home/gonglue_icon.png'),bgColor:'#169072'},
+    {title:'专家推荐',subTitle:'助你提高中奖率',route:'Tuijian',
+        icon:require('../imgs/home/tuijian_icon.png'),bgColor:'#901616'},
+    {title:'彩市喜讯',subTitle:'你会是下个百万得主吗？',route:'MoreNews',
+        icon:require('../imgs/home/caipiao_icon.png'),bgColor:'#8b3f7e'},
+];

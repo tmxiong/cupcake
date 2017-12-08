@@ -14,68 +14,111 @@ import {
 import { NavigationActions } from 'react-navigation'
 import cfn from '../../tools/commonFun'
 import NavBar from '../../component/NavBar';
-const {getArticleDetail} = require('../../config/urls');
-import config from '../../config/config'
-export default class articleDetailPage extends Component {
+import Race from '../../component/Race';
+import fetchp from '../../tools/fetch-polyfill'
+import urls from '../../config/urls'
+export default class racePage extends Component {
     static navigationOptions = {header: null};
 
     constructor(props) {
         super(props);
-        this.title = props.navigation.state.params.title;
-        this.jieshao = props.navigation.state.params.jieshao;
+        const {params} = props.navigation.state;
+        this.title = params.title;
+        this.jieshao = params.jieshao;
+        let current = params.current;
 
         this.state={
-            data:'',
+
             isError:false,
             isLoading: false,
-        }
+            result: current.result.split(','),
+            period: current.period,
+            date: current.date,
+            time: current.time,
+            isFromHistoryPage: params.isFromHistoryPage,
+        };
+
+
     }
     static defaultProps = {
 
     };
 
     componentDidMount() {
-        //this.getData();
+
+        this.startRace(this.state.result);
+    }
+
+    setData(data) {
+        let current = data.current;
+        let result = current.result.split(',');
+        this.startRace(result);
+        this.setState({
+            result: result,
+            period: current.period,
+            date: current.date,
+            time: current.time,
+        })
     }
 
     goBack() {
         this.props.navigation.goBack();
     }
 
-    renderWanfa() {
-        let wanfa = [];
-        for (let i = 0; i < config.wanfa.length; i++) {
-            wanfa.push(
-                <Text style={styles.text}>{config.wanfa[i]}</Text>
-            )
+    goToDetail(route, params) {
+        let {isFromHistoryPage} = this.props.navigation.state.params;
+        if(route == 'HistoryData' && isFromHistoryPage) {
+            return this.goBack();
         }
-        return wanfa;
+        this.props.navigation.navigate(route, params);
+    }
+
+    startRace(raceNum) {
+        this._raceRef._setRace('yiJing',raceNum);
+        // this._raceRef._setRace('zhunBei',raceNum);
+        // setTimeout(()=>{
+        //     this._raceRef._setRace('zhengZai',raceNum);
+        // },2*1000);
     }
 
     render() {
+
+
+
         return(
             <View style={styles.container}>
                 <NavBar
-                    middleText={"关于"}
+                    middleText={"开奖视频"}
                     leftFn={()=>this.goBack()}
+                    rightText={"更多开奖"}
+                    rightFn={()=>this.goToDetail('HistoryData',{isFromRacePage:true,update:this.setData.bind(this)})}
                 />
 
-                <ScrollView style={styles.content}>
-                    <Text style={styles.title}>关于App</Text>
-                    <Text style={styles.text}>
-                        此App支持PK10开奖直播、开奖回放、号码推荐、历史号码查询等特色功能。同时还支持时时彩、排列3、排列5、北京快乐8、快3、11选5等彩种的近期开奖查询和玩法帮助。
-                    </Text>
-                    <Text style={styles.title}>关于PK10</Text>
-                    <Text style={styles.text}>
-                        PK10又称PK拾游戏是2007年经财政部批准，由北京市福利彩票中心承销的一款视频彩票游戏。PK10由中国福利彩票发行中心统一发行。由北京市福利彩票发行中心承销，采用计算机网络系统发行销售，定期开奖。
-                    </Text>
+                <View>
+                    <View style={{flexDirection:'row',height:cfn.picHeight(60),alignItems:'center',marginTop:cfn.picHeight(20)}}>
+                        <Text style={{fontSize:15,marginLeft:cfn.picWidth(20)}}>第 </Text>
+                        <Text style={{color:'#f11',fontSize:15}}>{this.state.period}</Text>
+                        <Text style={{fontSize:15}}> 期开奖号码：</Text>
+                        <Text style={{position:'absolute',right:cfn.picWidth(20),color:'#aaa'}}>{this.state.date+' '+this.state.time}</Text>
+                    </View>
 
-                    <Text style={styles.title}>PK10玩法</Text>
+                    <View style={styles.codesContainer}>
+                        <View style={styles.codeContainer}><Text style={styles.code}>{this.state.result[0]}</Text></View>
+                        <View style={styles.codeContainer}><Text style={styles.code}>{this.state.result[1]}</Text></View>
+                        <View style={styles.codeContainer}><Text style={styles.code}>{this.state.result[2]}</Text></View>
+                        <View style={styles.codeContainer}><Text style={styles.code}>{this.state.result[3]}</Text></View>
+                        <View style={styles.codeContainer}><Text style={styles.code}>{this.state.result[4]}</Text></View>
+                        <View style={styles.codeContainer}><Text style={styles.code}>{this.state.result[5]}</Text></View>
+                        <View style={styles.codeContainer}><Text style={styles.code}>{this.state.result[6]}</Text></View>
+                        <View style={styles.codeContainer}><Text style={styles.code}>{this.state.result[7]}</Text></View>
+                        <View style={styles.codeContainer}><Text style={styles.code}>{this.state.result[8]}</Text></View>
+                        <View style={styles.codeContainer}><Text style={styles.code}>{this.state.result[9]}</Text></View>
+                    </View>
+                </View>
 
-                    {this.renderWanfa()}
-                    <View style={{height:cfn.picHeight(40)}}/>
-                </ScrollView>
-
+                <Race
+                    ref={(ref)=>this._raceRef = ref}
+                />
 
             </View>)
     }
@@ -100,6 +143,26 @@ const styles = StyleSheet.create({
         marginTop:cfn.picHeight(10),
         marginBottom:cfn.picHeight(10),
         color:'#666'
-    }
+    },
+    codesContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: cfn.deviceWidth(),
+        height: cfn.picHeight(100),
+        backgroundColor: '#fff'
+    },
+    codeContainer: {
+        width: cfn.picHeight(50),
+        height: cfn.picHeight(50),
+        borderRadius: cfn.picHeight(30),
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginLeft:cfn.picWidth(10),
+        backgroundColor:'#f22',
+    },
+    code:{
+        color:'#fff'
+    },
 
 });

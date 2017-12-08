@@ -31,6 +31,7 @@ export default class Banner extends PureComponent {
 
     static defaultProps = {
         bannerList:[],
+        height:commonFn.picHeight(365),
     };
 
     renderBanner() {
@@ -107,7 +108,7 @@ export default class Banner extends PureComponent {
 
     render() {
         return (
-            <View style={styles.container}>
+            <View style={[styles.container,{height: this.props.height}]}>
                 <ScrollView
                     horizontal={true}
                     showsHorizontalScrollIndicator={false}
@@ -136,7 +137,6 @@ module.exports = Banner;
 const styles = StyleSheet.create({
     container: {
         width: commonFn.deviceWidth(),
-        height: commonFn.picHeight(365),
         borderBottomColor:'rgba(255,255,255,0.7)',
         borderBottomWidth:1,
         // marginBottom:-1

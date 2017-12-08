@@ -2,13 +2,15 @@
  * Created by xiongtm on 2017/9/6.
  */
 var appid = {
-    def:666888,
-    pp:12445
+    def:2017369,
+    xm:15730479,
+    pp:15703947,
+    sg:15703949
 };
 module.exports = {
 
-    sourceName: '北京赛车PK10',
-    appName: '北京赛车PK10',
+    sourceName: '北京赛车PK10追号计划',
+    appName: '北京赛车PK10追号计划',
     version:'v2.0',
     copyright:['Copyright © 2014-2017 256彩票.All Rights Reserved', '256彩票 版权所有'],
     myCheck: 'http://aite.ngrok.cc',
@@ -18,7 +20,7 @@ module.exports = {
         require('../imgs/welcome/welcome_2.png'),
         require('../imgs/welcome/welcome_3.png'),
     ],
-    jumpUrl:'https://appid-apk.zz-app.com/frontApi/getAboutUs?appid='+appid.pp,
+    jumpUrl:'https://appid-apkk.xx-app.com/frontApi/getAboutUs?appid='+appid.sg,
     wanfa:[
         '1.猜冠军， 即前一，猜开奖号码的第一位，奖金10元，例如开奖号码为1,2,3,4,5,6,7,8,9,10。第一位是1，那么投注第一位包含1时，即为中奖。',
         '2.猜冠亚军 ，即前二，猜开奖号码的前二位，奖金10元，例如开奖号码为1,2,3,4,5,6,7,8,9,10；那么投注第一位包含1，第二位包含2时，即为中奖。选2中2，奖金55元。选2中1，奖金2元。',

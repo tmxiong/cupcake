@@ -54,7 +54,7 @@ export default class MinePage extends Component {
                 <ScrollView>
                     <View style={styles.container}>
                         <Image style={styles.icon_bg}
-                               source={require("../imgs/appIcon/icon_bg.png")}>
+                               source={require("../imgs/race/rank_bg.jpg")}>
                             <Image
                                 style={styles.icon}
                                 source={require('../imgs/appIcon/cp_icon.png')}/>
@@ -65,7 +65,7 @@ export default class MinePage extends Component {
                             onPress={()=>this.goToDetail('Welcome',{showWebView:false,url:'http://c.m.163.com'})}
                             activeOpacity={0.8}
                             style={[styles.item_container, {marginTop: cfn.picWidth(30)}]}>
-                            <Text style={styles.item_text}>欢迎页</Text>
+                            <Text style={styles.item_text}>APP介绍</Text>
                             <Image
                                 style={styles.icon_r}
                                 source={require('../imgs/more_r_icon.png')}/>
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     icon: {
         width: cfn.picWidth(130),
         height: cfn.picWidth(130),
-        resizeMode: 'contain',
+        borderRadius:10
     },
     icon_bg: {
         width:cfn.deviceWidth(),
